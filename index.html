@@ -60,6 +60,27 @@
             border-radius: 10px;
             border: 1px solid #1f2937;
         }
+        
+        /* --- MOBILE INTERNAL PANEL REARRANGEMENT --- */
+        @media (max-width: 767px) {
+            .bottom-panel {
+                display: flex;
+                flex-direction: column;
+            }
+            /* Sliders go to the top of the description panel */
+            .controls-column {
+                order: 1;
+            }
+            /* Stats and Respawn button go right under sliders */
+            .action-column {
+                order: 2;
+            }
+            /* Explanatory text description drops to the very bottom */
+            .instructions-column {
+                order: 3;
+            }
+        }
+
         @media (min-width: 768px) {
             .bottom-panel {
                 flex-direction: row;
