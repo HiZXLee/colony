@@ -251,10 +251,22 @@ function spawnDeathBurst(x, y) {
 
 // --- INTERACTIVE BRUSH ---
 let isDrawing = false;
+
 function drawTrailAtMouse(e) {
     const rect = canvas.getBoundingClientRect();
-    const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
-    const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    let clientX, clientY;
+
+    // Check if the event is a touch event or a mouse event
+    if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
+    const canvasX = (clientX - rect.left) * (canvas.width / rect.width);
+    const canvasY = (clientY - rect.top) * (canvas.height / rect.height);
     
     const mX = Math.floor(canvasX / SCALE);
     const mY = Math.floor(canvasY / SCALE);
@@ -273,9 +285,27 @@ function drawTrailAtMouse(e) {
         }
     }
 }
+
+// Mouse Event Listeners
 canvas.addEventListener('mousedown', (e) => { isDrawing = true; drawTrailAtMouse(e); });
 window.addEventListener('mouseup', () => isDrawing = false);
 canvas.addEventListener('mousemove', (e) => { if (isDrawing) drawTrailAtMouse(e); });
+
+// Touch Event Listeners (Mobile compatibility)
+canvas.addEventListener('touchstart', (e) => {
+    isDrawing = true;
+    drawTrailAtMouse(e);
+}, { passive: true });
+
+window.addEventListener('touchend', () => isDrawing = false);
+
+canvas.addEventListener('touchmove', (e) => {
+    if (isDrawing) {
+        // Prevents scrolling the screen while trying to draw on the canvas
+        if (e.cancelable) e.preventDefault(); 
+        drawTrailAtMouse(e);
+    }
+}, { passive: false }); // Must be passive: false so e.preventDefault() works
 
 // --- ANT ENGINE ---
 class Ant {
